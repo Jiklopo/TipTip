@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ICollisionTarget
 {
 	[SerializeField] private float movementForce;
 	[SerializeField] private float jumpForce;
@@ -114,11 +114,15 @@ public class PlayerController : MonoBehaviour
 	{
 		if (other.gameObject.CompareTag("Ground"))
 			isJumping = false;
+		
+		other.gameObject.GetComponent<ICollisionTarget>()?.OnCollision(gameObject);
+	}
 
-		else if (isJoining && other.gameObject.CompareTag("Player"))
+	public void OnCollision(GameObject other)
+	{
+		if (isJoining && other.CompareTag("Player"))
 		{
-			var otherPlayer = other.gameObject.GetComponent<PlayerController>();
-			JoinPlayers(this, otherPlayer);
+			JoinPlayers(this, other.GetComponent<PlayerController>());
 		}
 	}
 
@@ -128,5 +132,10 @@ public class PlayerController : MonoBehaviour
 		inputActions.Player.Join.started += context => StartJoining();
 		inputActions.Player.Join.canceled += context => StopJoining();
 		inputActions.Player.Split.performed += context => Split();
+	}
+
+	public void ChangeSize(int amount)
+	{
+		Size += amount;
 	}
 }
