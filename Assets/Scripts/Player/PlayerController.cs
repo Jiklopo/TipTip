@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 	[SerializeField] private int size = 1;
 
 	public static PlayerController parentPlayer { get; private set; }
-	private static int priorityCounter = 0;
+	private static int priorityCounter;
 
 	private Rigidbody2D rb;
 	private PlayerInputActions inputActions;
@@ -29,6 +29,13 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 	private void RefreshSize()
 	{
+		if (size <= 0)
+		{
+			Debug.Log("Player Dead :c");
+			Destroy(gameObject);
+			return;
+		}
+			
 		transform.localScale = Vector3.one * size;
 	}
 
@@ -137,5 +144,14 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 	public void ChangeSize(int amount)
 	{
 		Size += amount;
+	}
+
+	private void OnDestroy()
+	{
+		if (Equals(parentPlayer))
+		{
+			parentPlayer = FindObjectOfType<PlayerController>();
+			parentPlayer.priority = 0;
+		}
 	}
 }
