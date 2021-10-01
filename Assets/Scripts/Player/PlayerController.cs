@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICollisionTarget
@@ -12,6 +13,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 	private Rigidbody2D rb;
 	private PlayerInputActions inputActions;
+	private Animator animator;
 
 	private bool isJumping;
 	private bool isJoining;
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 		priority = priorityCounter++;
 		rb = GetComponent<Rigidbody2D>();
+		animator = GetComponent<Animator>();
 		inputActions = new PlayerInputActions();
 
 		AssignInputCallbacks();
@@ -55,6 +58,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 	private void Update()
 	{
+		animator.SetBool("isRunning", rb.velocity.magnitude >= Mathf.Epsilon);
 		var moveDir = isJoining
 			? (Vector2) (parentPlayer.transform.position - transform.position).normalized
 			: inputActions.Player.Move.ReadValue<Vector2>();
@@ -143,7 +147,19 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 	public void ChangeSize(int amount)
 	{
+		if (amount > 0)
+		{
+			animator.SetBool("isEating", true);
+			StartCoroutine(EatingRoutine());
+		}
+
 		Size += amount;
+	}
+
+	private IEnumerator EatingRoutine()
+	{
+		yield return new WaitForSeconds(2);
+		animator.SetBool("isEating", false);
 	}
 
 	private void OnDestroy()
