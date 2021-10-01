@@ -46,7 +46,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	protected virtual void Roam()
 	{
-		if (Vector3.Distance(transform.position, currentRoamPoint) <= Mathf.Epsilon)
+		if (Vector3.Distance(transform.position, currentRoamPoint) <= 1)
 			currentRoamPoint = GetRandomRoamPoint();
 		
 		Move(currentRoamPoint - transform.position);
@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	private Vector3 GetRandomRoamPoint()
 	{
-		return transform.position + Vector3.right * Random.Range(0f, roamRange);
+		return transform.position + Vector3.right * Random.Range(-roamRange, roamRange);
 	}
 
 	public void OnCollision(GameObject other)
