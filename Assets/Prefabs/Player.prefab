@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxVelocity: 10
   movementForce: 5
-  jumpForce: 7.5
+  jumpForce: 6
   size: 1
 --- !u!95 &2263481841321632509
 Animator:
