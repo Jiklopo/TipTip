@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : MonoBehaviour, ICollisionTarget
@@ -11,12 +12,14 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	protected Vector3 currentRoamPoint;
 	protected Rigidbody2D rb;
+	protected Animator animator;
 	protected Transform player;
 	protected bool IsChasing => player != null;
 
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		animator = GetComponent<Animator>();
 		
 		var trigger = gameObject.AddComponent<CircleCollider2D>();
 		trigger.isTrigger = true;
@@ -54,6 +57,9 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	protected virtual void Move(Vector2 direction)
 	{
+		var localScale = transform.localScale;
+		var absX = Mathf.Abs(localScale.x);
+		transform.localScale = new Vector3(direction.x < 0? absX: absX * -1, localScale.y, localScale.z);
 		rb.AddForce(direction.normalized * speed);
 	}
 
@@ -64,7 +70,12 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	public void OnCollision(GameObject other)
 	{
-		other.GetComponent<PlayerController>()?.ChangeSize(-strength);
+		var player = other.GetComponent<PlayerController>();
+		if (player != null)
+		{
+			player.ChangeSize(-strength);
+			animator.SetTrigger("attack");
+		}
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -75,7 +86,9 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.CompareTag("Player") && player.Equals(other.transform))
-			player = null;
+		if (!other.CompareTag("Player") || !player.Equals(other.transform)) 
+			return;
+		player = null;
+		currentRoamPoint = GetRandomRoamPoint();
 	}
 }
