@@ -57,6 +57,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	protected virtual void Move(Vector2 direction)
 	{
+		animator.SetBool("walk", direction.magnitude != 0);
 		var localScale = transform.localScale;
 		var absX = Mathf.Abs(localScale.x);
 		transform.localScale = new Vector3(direction.x < 0? absX: absX * -1, localScale.y, localScale.z);

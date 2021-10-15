@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICollisionTarget
 {
+	[SerializeField] private float maxVelocity;
 	[SerializeField] private float movementForce;
 	[SerializeField] private float jumpForce;
 	[SerializeField] private int size = 1;
@@ -68,7 +69,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 
 	private void Move(Vector2 direction)
 	{
-		rb.AddForce(direction * movementForce);
+		rb.AddForce(direction * movementForce * (1 - rb.velocity.magnitude / maxVelocity));
 	}
 
 	private void Jump()
