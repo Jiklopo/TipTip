@@ -9,7 +9,18 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 	[SerializeField] private float jumpForce;
 	[SerializeField] private int size = 1;
 
+	private static int totalSize;
+	public static int TotalSize { 
+		get => totalSize;
+		private set
+		{
+			totalSize = value;
+			OnTotalSizeChange?.Invoke(totalSize);
+		}
+	}
 	public static PlayerController parentPlayer { get; private set; }
+	public static Action OnPlayerDead;
+	public static Action<int> OnTotalSizeChange;
 	private static int priorityCounter;
 
 	private Rigidbody2D rb;
@@ -35,6 +46,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 		if (size <= 0)
 		{
 			Debug.Log("Player Dead :c");
+			OnPlayerDead?.Invoke();
 			Destroy(gameObject);
 			return;
 		}
@@ -45,7 +57,10 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 	private void Awake()
 	{
 		if (parentPlayer == null)
+		{
 			parentPlayer = this;
+			TotalSize = size;
+		}
 
 		priority = priorityCounter++;
 		rb = GetComponent<Rigidbody2D>();
@@ -155,6 +170,7 @@ public class PlayerController : MonoBehaviour, ICollisionTarget
 		}
 
 		Size += amount;
+		TotalSize += amount;
 	}
 
 	private IEnumerator EatingRoutine()
