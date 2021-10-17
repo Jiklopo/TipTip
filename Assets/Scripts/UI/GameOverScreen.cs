@@ -7,11 +7,11 @@ namespace UI
 {
 	public class GameOverScreen : MonoBehaviour
 	{
-		[SerializeField] private Button exitButton;
+		[SerializeField] private Button restartButton;
 		[SerializeField] private Button menuButton;
 		private void Awake()
 		{
-			exitButton.onClick.AddListener(Exit);
+			restartButton.onClick.AddListener(RestartLevel);
 			menuButton.onClick.AddListener(GoToMenu);
 			PlayerController.OnTotalSizeChange += CheckPlayer;
 			gameObject.SetActive(false);
@@ -30,15 +30,14 @@ namespace UI
 			gameObject.SetActive(true);
 		}
 
-		private void Exit()
+		private void RestartLevel()
 		{
-			Application.Quit();
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 
 		private void GoToMenu()
 		{
 			SceneManager.LoadScene(0);
-
 		}
 	}
 }
