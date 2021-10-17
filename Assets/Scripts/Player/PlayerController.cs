@@ -1,190 +1,198 @@
 using System;
 using System.Collections;
+using Sound;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, ICollisionTarget
+namespace Player
 {
-	[SerializeField] private float maxVelocity;
-	[SerializeField] private float movementForce;
-	[SerializeField] private float jumpForce;
-	[SerializeField] private int size = 1;
-
-	private static int totalSize;
-	public static int TotalSize { 
-		get => totalSize;
-		private set
-		{
-			totalSize = value;
-			OnTotalSizeChange?.Invoke(totalSize);
-		}
-	}
-	public static PlayerController parentPlayer { get; private set; }
-	public static Action OnPlayerDead;
-	public static Action<int> OnTotalSizeChange;
-	private static int priorityCounter;
-
-	private Rigidbody2D rb;
-	private PlayerInputActions inputActions;
-	private Animator animator;
-
-	private bool isJumping;
-	private bool isJoining;
-	private int priority;
-
-	private int Size
+	public class PlayerController : MonoBehaviour, ICollisionTarget
 	{
-		get => size;
-		set
+		[SerializeField] private float maxVelocity;
+		[SerializeField] private float movementForce;
+		[SerializeField] private float jumpForce;
+		[SerializeField] private int size = 1;
+		private int Size
 		{
-			size = value;
+			get => size;
+			set
+			{
+				size = value;
+				RefreshSize();
+			}
+		}
+	
+		private static int totalSize;
+		private static int TotalSize
+		{
+			get => totalSize;
+			set
+			{
+				totalSize = value;
+				OnTotalSizeChange?.Invoke(totalSize);
+			}
+		}
+
+		public static PlayerController ParentPlayer { get; private set; }
+		public static Action<int> OnTotalSizeChange;
+		private static int priorityCounter;
+
+		private Rigidbody2D rb;
+		private PlayerInputActions inputActions;
+		private Animator animator;
+		private SoundPlayer soundPlayer;
+
+		private bool isJumping;
+		private bool isJoining;
+		private int priority;
+		private static readonly int IsRunning = Animator.StringToHash("isRunning");
+		private static readonly int IsEating = Animator.StringToHash("isEating");
+
+		private void Awake()
+		{
+			if (ParentPlayer == null)
+			{
+				ParentPlayer = this;
+				TotalSize = size;
+			}
+
+			priority = priorityCounter++;
+			rb = GetComponent<Rigidbody2D>();
+			animator = GetComponent<Animator>();
+			soundPlayer = GetComponent<SoundPlayer>();
+			inputActions = new PlayerInputActions();
+
+			AssignInputCallbacks();
 			RefreshSize();
 		}
-	}
-
-	private void RefreshSize()
-	{
-		if (size <= 0)
+	
+		private void Update()
 		{
-			Debug.Log("Player Dead :c");
-			OnPlayerDead?.Invoke();
-			Destroy(gameObject);
-			return;
+			animator.SetBool(IsRunning, rb.velocity.magnitude >= Mathf.Epsilon);
+			var moveDir = isJoining
+				? (Vector2) (ParentPlayer.transform.position - transform.position).normalized
+				: inputActions.Player.Move.ReadValue<Vector2>();
+
+			Move(moveDir);
 		}
-			
-		transform.localScale = Vector3.one * size;
-	}
-
-	private void Awake()
-	{
-		if (parentPlayer == null)
+	
+		private void OnEnable()
 		{
-			parentPlayer = this;
-			TotalSize = size;
+			inputActions.Enable();
 		}
 
-		priority = priorityCounter++;
-		rb = GetComponent<Rigidbody2D>();
-		animator = GetComponent<Animator>();
-		inputActions = new PlayerInputActions();
-
-		AssignInputCallbacks();
-		RefreshSize();
-	}
-
-
-	private void Update()
-	{
-		animator.SetBool("isRunning", rb.velocity.magnitude >= Mathf.Epsilon);
-		var moveDir = isJoining
-			? (Vector2) (parentPlayer.transform.position - transform.position).normalized
-			: inputActions.Player.Move.ReadValue<Vector2>();
-
-		Move(moveDir);
-	}
-
-	private void Move(Vector2 direction)
-	{
-		rb.AddForce(direction * movementForce * (1 - rb.velocity.magnitude / maxVelocity));
-	}
-
-	private void Jump()
-	{
-		if (isJumping || isJoining)
-			return;
-
-		isJumping = true;
-		rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-	}
-
-	private void StartJoining()
-	{
-		isJoining = true;
-	}
-
-	private void StopJoining()
-	{
-		isJoining = false;
-	}
-
-	private static void JoinPlayers(PlayerController first, PlayerController second)
-	{
-		if (!first.gameObject.activeSelf || !second.gameObject.activeSelf)
-			return;
-
-		var winner = first.priority < second.priority ? first : second;
-		var loser = first.priority > second.priority ? first : second;
-
-		loser.gameObject.SetActive(false);
-		winner.Size += loser.Size;
-	}
-
-	private void Split()
-	{
-		while (Size > 1)
+		private void OnDisable()
 		{
-			Size--;
-			Instantiate(this, transform.position, Quaternion.identity).Size = 1;
-		}
-	}
-
-	private void OnEnable()
-	{
-		inputActions.Enable();
-	}
-
-	private void OnDisable()
-	{
-		inputActions.Disable();
-	}
-
-	private void OnCollisionEnter2D(Collision2D other)
-	{
-		if (other.gameObject.CompareTag("Ground"))
-			isJumping = false;
-		
-		other.gameObject.GetComponent<ICollisionTarget>()?.OnCollision(gameObject);
-	}
-
-	public void OnCollision(GameObject other)
-	{
-		if (isJoining && other.CompareTag("Player"))
-		{
-			JoinPlayers(this, other.GetComponent<PlayerController>());
-		}
-	}
-
-	private void AssignInputCallbacks()
-	{
-		inputActions.Player.Jump.performed += context => Jump();
-		inputActions.Player.Join.started += context => StartJoining();
-		inputActions.Player.Join.canceled += context => StopJoining();
-		inputActions.Player.Split.performed += context => Split();
-	}
-
-	public void ChangeSize(int amount)
-	{
-		if (amount > 0)
-		{
-			animator.SetBool("isEating", true);
-			StartCoroutine(EatingRoutine());
+			inputActions.Disable();
 		}
 
-		Size += amount;
-		TotalSize += amount;
-	}
-
-	private IEnumerator EatingRoutine()
-	{
-		yield return new WaitForSeconds(2);
-		animator.SetBool("isEating", false);
-	}
-
-	private void OnDestroy()
-	{
-		if (Equals(parentPlayer))
+		private void OnCollisionEnter2D(Collision2D other)
 		{
-			parentPlayer = FindObjectOfType<PlayerController>();
-			parentPlayer.priority = 0;
+			if (other.gameObject.CompareTag("Ground"))
+				isJumping = false;
+
+			other.gameObject.GetComponent<ICollisionTarget>()?.OnCollision(gameObject);
+		}
+
+		public void OnCollision(GameObject other)
+		{
+			if (isJoining && other.CompareTag("Player"))
+			{
+				JoinPlayers(this, other.GetComponent<PlayerController>());
+			}
+		}
+
+		private void OnDestroy()
+		{
+			if (!Equals(ParentPlayer)) return;
+			ParentPlayer = FindObjectOfType<PlayerController>();
+			ParentPlayer.priority = 0;
+		}
+
+		private void Move(Vector2 direction)
+		{
+			rb.AddForce(direction * (movementForce * (1 - rb.velocity.magnitude / maxVelocity)));
+		}
+
+		private void Jump()
+		{
+			if (isJumping || isJoining)
+				return;
+
+			isJumping = true;
+			rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+			soundPlayer.PlayClip("jump");
+		}
+
+		private void StartJoining()
+		{
+			isJoining = true;
+			soundPlayer.PlayClip("joining", true);
+		}
+
+		private void StopJoining()
+		{
+			isJoining = false;
+		}
+
+		private static void JoinPlayers(PlayerController first, PlayerController second)
+		{
+			if (!first.gameObject.activeSelf || !second.gameObject.activeSelf)
+				return;
+
+			var winner = first.priority < second.priority ? first : second;
+			var loser = first.priority > second.priority ? first : second;
+
+			loser.gameObject.SetActive(false);
+			winner.Size += loser.Size;
+			winner.soundPlayer.PlayClip("join");
+		}
+
+		private void Split()
+		{
+			while (Size > 1)
+			{
+				Size--;
+				Instantiate(this, transform.position, Quaternion.identity).Size = 1;
+			}
+		}
+
+		private void AssignInputCallbacks()
+		{
+			inputActions.Player.Jump.performed += context => Jump();
+			inputActions.Player.Join.started += context => StartJoining();
+			inputActions.Player.Join.canceled += context => StopJoining();
+			inputActions.Player.Split.performed += context => Split();
+		}
+
+		public void ChangeSize(int amount)
+		{
+			if (amount > 0)
+				StartCoroutine(EatingRoutine());
+			else
+				soundPlayer.PlayClip("damage");
+
+			Size += amount;
+			TotalSize += amount;
+		}
+
+		private void RefreshSize()
+		{
+			if (size <= 0)
+			{
+				soundPlayer.PlayClip("dead");
+				Destroy(gameObject);
+				return;
+			}
+
+			transform.localScale = Vector3.one * size;
+		}
+
+		private IEnumerator EatingRoutine()
+		{
+			soundPlayer.PlayClip("eat");
+			animator.SetBool(IsEating, true);
+			yield return new WaitForSeconds(2);
+			animator.SetBool(IsEating, false);
 		}
 	}
 }

@@ -1,9 +1,10 @@
+using Player;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class PlayerCameraFollow : MonoBehaviour
 {
-    private Transform target => PlayerController.parentPlayer.transform;
+    private Transform target => PlayerController.ParentPlayer.transform;
     private Camera camera;
 
     private void Awake()

@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using Player;
+using Sound;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -14,6 +16,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 	protected Vector3 currentRoamPoint;
 	protected Rigidbody2D rb;
 	protected Animator animator;
+	protected SoundPlayer soundPlayer;
 	protected Transform player;
 	protected float lastAttackTime = Mathf.NegativeInfinity;
 	protected bool IsChasing => player != null;
@@ -23,6 +26,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		soundPlayer = GetComponent<SoundPlayer>();
 		
 		var trigger = gameObject.AddComponent<CircleCollider2D>();
 		trigger.isTrigger = true;
@@ -81,6 +85,7 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 		if (playerController != null)
 		{
 			playerController.ChangeSize(-strength);
+			soundPlayer.PlayClip("attack");
 			animator.SetTrigger("attack");
 		}
 	}
@@ -88,13 +93,18 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("Player") && !IsChasing)
+		{
 			player = other.transform;
+			soundPlayer.PlayClip("notice");			
+		}
 	}
 
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (!other.CompareTag("Player") || !player.Equals(other.transform)) 
 			return;
+		
+		soundPlayer.PlayClip("leave");
 		player = null;
 		currentRoamPoint = GetRandomRoamPoint();
 	}
