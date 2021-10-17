@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Events;
 using Sound;
 using UnityEngine;
 
@@ -163,6 +164,7 @@ namespace Player
 			inputActions.Player.Join.started += context => StartJoining();
 			inputActions.Player.Join.canceled += context => StopJoining();
 			inputActions.Player.Split.performed += context => Split();
+			inputActions.Player.Pause.performed += context => GameBus.OnGamePaused.Invoke();
 		}
 
 		public void ChangeSize(int amount)

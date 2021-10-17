@@ -8,20 +8,16 @@ namespace UI
 {
 	public class MainMenu : UIElement
 	{
+		[SerializeField] private LevelSelectScreen levelSelectScreen;
 		[SerializeField] private Button playButton;
 		[SerializeField] private Button levelsButton;
 		[SerializeField] private Button exitButton;
-
-		private LevelSelectScreen levelSelectScreen;
 
 		private void Awake()
 		{
 			playButton.onClick.AddListener(StartFirstLevel);
 			levelsButton.onClick.AddListener(ShowLevelsPanel);
 			exitButton.onClick.AddListener(Quit);
-
-			levelSelectScreen = FindObjectOfType<LevelSelectScreen>();
-			levelSelectScreen.Close();
 		}
 
 		private void StartFirstLevel()

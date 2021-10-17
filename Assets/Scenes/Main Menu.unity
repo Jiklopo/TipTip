@@ -842,6 +842,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showAtStart: 1
   animationTime: 0.3
+  levelSelectScreen: {fileID: 1598517791}
   playButton: {fileID: 844452039464243396}
   levelsButton: {fileID: 1332687537}
   exitButton: {fileID: 1828722393}
