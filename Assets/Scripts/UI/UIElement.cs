@@ -6,22 +6,32 @@ namespace UI
 {
 	public abstract class UIElement : MonoBehaviour
 	{
+		[SerializeField] private bool showAtStart;
+		[SerializeField] private float animationTime = 0.3f;
 		protected Action onClose;
 		protected UIElement lastCaller;
-		[SerializeField] private float animationTime = 0.3f;
 
 		private void Awake()
 		{
 			OnAwake();
 		}
-		
+
+		private void Start()
+		{
+			gameObject.SetActive(showAtStart);
+		}
+
 		protected virtual void OnAwake(){}
 
 		public void Show()
 		{
 			transform.localScale = Vector3.zero;
 			gameObject.SetActive(true);
-			transform.DOScale(Vector3.one, animationTime);
+			transform.DOScale(Vector3.one, animationTime).OnComplete(OnShown);
+		}
+
+		protected virtual void OnShown()
+		{
 		}
 
 		public void Show(UIElement caller, Action onClose)
@@ -34,7 +44,10 @@ namespace UI
 
 		public virtual void Close()
 		{
-			gameObject.SetActive(false);
+			transform
+				.DOScale(Vector3.zero, animationTime)
+				.OnComplete(() => gameObject.SetActive(false));
+			
 			lastCaller?.Show();
 			onClose?.Invoke();
 

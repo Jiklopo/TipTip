@@ -2,16 +2,18 @@
 using Player;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UI
 {
-	public class PlayerSize : MonoBehaviour
+	public class PlayerSizeText : MonoBehaviour
 	{
 		[SerializeField] private TextMeshProUGUI playerSizeText;
 
 		private void Awake()
 		{
 			PlayerController.OnTotalSizeChange += UpdateText;
+			UpdateText(PlayerController.TotalSize);
 		}
 
 		private void OnDestroy()

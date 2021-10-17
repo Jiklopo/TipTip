@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Events;
+using UnityEngine;
 
 public class Finish : MonoBehaviour, ICollisionTarget
 {
@@ -6,7 +7,7 @@ public class Finish : MonoBehaviour, ICollisionTarget
 	{
 		if (other.CompareTag("Player"))
 		{
-			Debug.Log("Level Completed =)");
+			GameBus.OnLevelCompleted.Invoke();
 		}
 	}
 }

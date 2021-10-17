@@ -11,7 +11,7 @@ namespace Player
 		[SerializeField] private float movementForce;
 		[SerializeField] private float jumpForce;
 		[SerializeField] private int size = 1;
-		private int Size
+		public int Size
 		{
 			get => size;
 			set
@@ -22,7 +22,7 @@ namespace Player
 		}
 	
 		private static int totalSize;
-		private static int TotalSize
+		public static int TotalSize
 		{
 			get => totalSize;
 			set
@@ -53,6 +53,7 @@ namespace Player
 			{
 				ParentPlayer = this;
 				TotalSize = size;
+				Time.timeScale = 1;
 			}
 
 			priority = priorityCounter++;

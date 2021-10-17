@@ -840,6 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b89003860d504ccca3bcbb77fe83f01b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showAtStart: 1
   animationTime: 0.3
   playButton: {fileID: 844452039464243396}
   levelsButton: {fileID: 1332687537}
@@ -1151,6 +1152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0952974469a846a19a8aa4539db290c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showAtStart: 0
   animationTime: 0.3
   closeButton: {fileID: 1578798352}
   levelsGrid: {fileID: 1977221714}

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-	public class LevelsPanel : UIElement
+	public class LevelSelectScreen : UIElement
 	{
 		[SerializeField] private Button closeButton;
 		[SerializeField] private RectTransform levelsGrid;

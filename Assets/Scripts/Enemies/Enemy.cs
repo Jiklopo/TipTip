@@ -78,16 +78,18 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	public void OnCollision(GameObject other)
 	{
-		if(!CanAttack)
+		Attack(other.GetComponent<PlayerController>());
+	}
+
+	private void Attack(PlayerController playerController)
+	{
+		if (!CanAttack || playerController == null)
 			return;
-		
-		var playerController = other.GetComponent<PlayerController>();
-		if (playerController != null)
-		{
-			playerController.ChangeSize(-strength);
-			soundPlayer.PlayClip("attack");
-			animator.SetTrigger("attack");
-		}
+
+		lastAttackTime = Time.time;
+		playerController.ChangeSize(-strength);
+		soundPlayer.PlayClip("attack");
+		animator.SetTrigger("attack");
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

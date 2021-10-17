@@ -6,16 +6,15 @@ using UnityEngine.UI;
 
 namespace UI
 {
-	public class GameOverScreen : MonoBehaviour
+	public class GameOverScreen : UIElement
 	{
 		[SerializeField] private Button restartButton;
 		[SerializeField] private Button menuButton;
-		private void Awake()
+		protected override void OnAwake()
 		{
 			restartButton.onClick.AddListener(RestartLevel);
 			menuButton.onClick.AddListener(GoToMenu);
 			PlayerController.OnTotalSizeChange += CheckPlayer;
-			gameObject.SetActive(false);
 		}
 
 		private void OnDestroy()
@@ -27,8 +26,7 @@ namespace UI
 		{
 			if (totalSize > 0) 
 				return;
-			Time.timeScale = 0;
-			gameObject.SetActive(true);
+			Show();
 		}
 
 		private void RestartLevel()
@@ -39,6 +37,11 @@ namespace UI
 		private void GoToMenu()
 		{
 			SceneManager.LoadScene(0);
+		}
+
+		protected override void OnShown()
+		{
+			Time.timeScale = 0;
 		}
 	}
 }

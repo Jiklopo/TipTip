@@ -12,7 +12,7 @@ namespace UI
 		[SerializeField] private Button levelsButton;
 		[SerializeField] private Button exitButton;
 
-		private LevelsPanel levelsPanel;
+		private LevelSelectScreen levelSelectScreen;
 
 		private void Awake()
 		{
@@ -20,8 +20,8 @@ namespace UI
 			levelsButton.onClick.AddListener(ShowLevelsPanel);
 			exitButton.onClick.AddListener(Quit);
 
-			levelsPanel = FindObjectOfType<LevelsPanel>();
-			levelsPanel.Close();
+			levelSelectScreen = FindObjectOfType<LevelSelectScreen>();
+			levelSelectScreen.Close();
 		}
 
 		private void StartFirstLevel()
@@ -31,7 +31,7 @@ namespace UI
 
 		private void ShowLevelsPanel()
 		{
-			levelsPanel.Show(this, null);
+			levelSelectScreen.Show(this, null);
 		}
 
 		private void Quit()
