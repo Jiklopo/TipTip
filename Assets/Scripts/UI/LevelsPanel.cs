@@ -20,7 +20,7 @@ namespace UI
 
 		private void GenerateLevelsButton()
 		{
-			for (var i = 1; i <= SceneManager.sceneCount; i++)
+			for (var i = 1; i < SceneManager.sceneCountInBuildSettings; i++)
 			{
 				var button = Instantiate(levelButtonPrefab, levelsGrid);
 				var sceneIndex = i;
