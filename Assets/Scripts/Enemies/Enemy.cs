@@ -9,12 +9,15 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 	[SerializeField] protected float speed;
 	[SerializeField] protected float viewRadius;
 	[SerializeField] protected float roamRange;
+	[SerializeField] protected float attackInterval = 3f;
 
 	protected Vector3 currentRoamPoint;
 	protected Rigidbody2D rb;
 	protected Animator animator;
 	protected Transform player;
+	protected float lastAttackTime = Mathf.NegativeInfinity;
 	protected bool IsChasing => player != null;
+	protected bool CanAttack => Time.time - lastAttackTime >= attackInterval;
 
 	private void Awake()
 	{
@@ -71,10 +74,13 @@ public class Enemy : MonoBehaviour, ICollisionTarget
 
 	public void OnCollision(GameObject other)
 	{
-		var player = other.GetComponent<PlayerController>();
-		if (player != null)
+		if(!CanAttack)
+			return;
+		
+		var playerController = other.GetComponent<PlayerController>();
+		if (playerController != null)
 		{
-			player.ChangeSize(-strength);
+			playerController.ChangeSize(-strength);
 			animator.SetTrigger("attack");
 		}
 	}
