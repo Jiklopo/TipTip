@@ -108,6 +108,7 @@ namespace Player
 			if (!Equals(ParentPlayer)) return;
 			ParentPlayer = FindObjectOfType<PlayerController>();
 			ParentPlayer.priority = 0;
+			ParentPlayer.soundPlayer.PlayClip("dead");
 		}
 
 		private void Move(Vector2 direction)
@@ -183,7 +184,6 @@ namespace Player
 		{
 			if (size <= 0)
 			{
-				ParentPlayer.soundPlayer.PlayClip("dead");
 				Destroy(gameObject);
 				return;
 			}
