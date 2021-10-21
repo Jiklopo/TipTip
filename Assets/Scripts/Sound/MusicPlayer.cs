@@ -12,9 +12,17 @@ namespace Sound
 		[SerializeField] private List<AudioClip> tracks;
 		private AudioSource audioSource;
 		private int currentTrack = -1;
+		private static MusicPlayer instance;
 
 		private void Awake()
 		{
+			if (instance != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+
+			instance = this;
 			DontDestroyOnLoad(this);
 			audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
 			PlayNextTrack();
