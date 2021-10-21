@@ -20,7 +20,7 @@ namespace UI
 
 		private void OnEnable()
 		{
-			var areLevelsLeft = SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings;
+			var areLevelsLeft = SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1;
 			nextLevelButton.gameObject.SetActive(areLevelsLeft);
 		}
 
