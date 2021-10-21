@@ -15477,11 +15477,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundData:
   - name: notice
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: f26856561c0954d4ca91829043013625, type: 3}
   - name: leave
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: d55c7943041db6e4c872452a64febd96, type: 3}
   - name: attack
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: 5c9db787bb1cd774aa3ffb0bfd64da4e, type: 3}
 --- !u!114 &5258912745776807173
 MonoBehaviour:
   m_ObjectHideFlags: 0

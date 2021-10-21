@@ -222,19 +222,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundData:
   - name: jump
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: 3bdb8bc2fe08fcf4285b6077a40e003a, type: 3}
   - name: damage
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: 718fa10b4152e2c45b45ce0e62fe8d16, type: 3}
   - name: dead
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: a83dea55a55a71b4497b7d78bcd5e880, type: 3}
   - name: join
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: fad20a15e61129c44b733d75981562b8, type: 3}
   - name: split
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: 98f46c19e45ec7349b6e7ca3a36f4e32, type: 3}
   - name: joining
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: f24a275229af02f4789699e12efc3e97, type: 3}
   - name: eat
-    sound: {fileID: 0}
+    sound: {fileID: 8300000, guid: 23ef869f5662b29428d4f8219b15442a, type: 3}
 --- !u!114 &7874045077623284431
 MonoBehaviour:
   m_ObjectHideFlags: 0

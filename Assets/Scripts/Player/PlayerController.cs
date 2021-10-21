@@ -155,6 +155,7 @@ namespace Player
 			{
 				Size--;
 				Instantiate(this, transform.position, Quaternion.identity).Size = 1;
+				soundPlayer.PlayClip("split");
 			}
 		}
 
@@ -182,7 +183,7 @@ namespace Player
 		{
 			if (size <= 0)
 			{
-				soundPlayer.PlayClip("dead");
+				ParentPlayer.soundPlayer.PlayClip("dead");
 				Destroy(gameObject);
 				return;
 			}
