@@ -20,6 +20,7 @@ namespace UI
 		private void OnDestroy()
 		{
 			GameBus.OnGamePaused -= OnGamePaused;
+			Time.timeScale = 1;
 		}
 
 		private void OnGamePaused()

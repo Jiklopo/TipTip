@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ namespace UI
 
 		protected override void OnAwake()
 		{
-			closeButton.onClick.AddListener(Close);
+			closeButton.onClick.AddListener(() => Close());
 			GenerateLevelsButton();
 		}
 

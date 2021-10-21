@@ -16,17 +16,26 @@ namespace UI
 			OnAwake();
 		}
 
+		protected virtual void OnAwake()
+		{
+		}
+
 		private void Start()
 		{
 			gameObject.SetActive(showAtStart);
 		}
 
-		protected virtual void OnAwake(){}
+		public void Show(UIElement caller)
+		{
+			lastCaller = caller;
+			caller.Close();
+			Show();
+		}
 
 		public void Show()
 		{
-			transform.localScale = Vector3.zero;
 			gameObject.SetActive(true);
+			transform.localScale = Vector3.zero;
 			transform.DOScale(Vector3.one, animationTime).OnComplete(OnShown);
 		}
 
@@ -34,25 +43,23 @@ namespace UI
 		{
 		}
 
-		public void Show(UIElement caller, Action onClose)
-		{
-			this.onClose = onClose;
-			lastCaller = caller;
-			caller.Close();
-			Show();
-		}
-
-		public virtual void Close()
+		public void Close(Action onClose = null)
 		{
 			transform
 				.DOScale(Vector3.zero, animationTime)
-				.OnComplete(() => gameObject.SetActive(false));
-			
-			lastCaller?.Show();
-			onClose?.Invoke();
+				.OnComplete(() =>
+				{
+					gameObject.SetActive(false);
+					OnClosed();
+				});
 
+			lastCaller?.Show();
 			lastCaller = null;
-			onClose = null;
+			onClose?.Invoke();
+		}
+
+		protected virtual void OnClosed()
+		{
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace UI
 		[SerializeField] private Button levelsButton;
 		[SerializeField] private Button exitButton;
 
-		private void Awake()
+		protected override void OnAwake()
 		{
 			playButton.onClick.AddListener(StartFirstLevel);
 			levelsButton.onClick.AddListener(ShowLevelsPanel);
@@ -27,7 +27,7 @@ namespace UI
 
 		private void ShowLevelsPanel()
 		{
-			levelSelectScreen.Show(this, null);
+			levelSelectScreen.Show(this);
 		}
 
 		private void Quit()
